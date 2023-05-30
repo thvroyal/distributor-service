@@ -65,13 +65,27 @@ const verifyToken = async (token, type) => {
  * @param {User} user
  * @returns {Promise<Object>}
  */
-const generateAuthTokens = async (user) => {
+const generateAuthTokens = async (user, res) => {
   const accessTokenExpires = moment().add(config.jwt.accessExpirationMinutes, 'minutes');
   const accessToken = generateToken(user.id, accessTokenExpires, tokenTypes.ACCESS);
 
   const refreshTokenExpires = moment().add(config.jwt.refreshExpirationDays, 'days');
   const refreshToken = generateToken(user.id, refreshTokenExpires, tokenTypes.REFRESH);
   await saveToken(refreshToken, user.id, refreshTokenExpires, tokenTypes.REFRESH);
+
+  if (res) {
+    res.cookie('refreshToken', refreshToken, {
+      maxAge: config.jwt.refreshExpirationDays * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      // secure: false,
+    });
+
+    res.cookie('accessToken', accessToken, {
+      maxAge: config.jwt.accessExpirationMinutes * 60 * 1000,
+      httpOnly: true,
+      // secure: false,
+    });
+  }
 
   return {
     access: {

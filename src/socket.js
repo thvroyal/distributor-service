@@ -1,6 +1,6 @@
 const io = require('socket.io');
 const logger = require('./config/logger');
-const socketEvent = require('./events');
+// const socketEvent = require('./events');
 
 const initSocket = (server) => {
   const ioServer = io(server);
@@ -8,7 +8,7 @@ const initSocket = (server) => {
   ioServer.on('connection', (socket) => {
     logger.info('a user connected');
 
-    socketEvent(ioServer, socket);
+    // socketEvent(ioServer, socket);
 
     socket.on('disconnect', () => {
       socket.broadcast.emit('user disconnected');
