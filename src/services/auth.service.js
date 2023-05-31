@@ -90,10 +90,29 @@ const verifyEmail = async (verifyEmailToken) => {
   }
 };
 
+/**
+ * get user from access token
+ * @param {string} accessToken
+ * @returns {Promise}
+ */
+const getUserFromAccessToken = async (accessToken) => {
+  try {
+    const accessTokenDoc = await tokenService.verifyToken(accessToken, tokenTypes.ACCESS);
+    const user = await userService.getUserById(accessTokenDoc.user);
+    if (!user) {
+      throw new Error();
+    }
+    return user;
+  } catch (error) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate');
+  }
+};
+
 module.exports = {
   loginUserWithEmailAndPassword,
   logout,
   refreshAuth,
   resetPassword,
   verifyEmail,
+  getUserFromAccessToken,
 };
