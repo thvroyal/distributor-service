@@ -16,7 +16,10 @@ const login = catchAsync(async (req, res) => {
 });
 
 const logout = catchAsync(async (req, res) => {
-  await authService.logout(req.body.refreshToken);
+  const { refreshToken } = req.cookies;
+  await authService.logout(refreshToken);
+  res.clearCookie('refreshToken');
+  res.clearCookie('accessToken');
   res.status(httpStatus.NO_CONTENT).send();
 });
 
