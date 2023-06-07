@@ -14,6 +14,9 @@ const create = catchAsync(async (req, res) => {
   const { name, categories } = req.body;
   const id = v4();
 
+  console.log('\nReceived request');
+  console.log(req.body);
+
   const uploadFolder = path.join(process.cwd(), '/uploads', `${id}`);
   if (!fs.existsSync(uploadFolder)) {
     fs.mkdirSync(uploadFolder, { recursive: true });
@@ -31,22 +34,25 @@ const create = catchAsync(async (req, res) => {
     if (error) {
       throw new ApiError(httpStatus.SERVICE_UNAVAILABLE, 'Failed to bundle files');
     }
-    const newProject = {
-      name,
-      categories,
-      folder: uploadFolder,
-    };
-
-    // record to database
-    const project = await projectService.createProject(newProject);
-
-    if (!project) {
-      throw new ApiError(httpStatus.SERVICE_UNAVAILABLE, 'Failed to create project');
-    }
-
-    // run project in pando service
-    res.status(httpStatus.CREATED).send({ project });
   });
+
+  const newProject = {
+    name,
+    categories,
+    id,
+  };
+
+  console.log(`Save files to:${uploadFolder}`);
+
+  // record to database
+  const project = await projectService.createProject(newProject, id, uploadFolder);
+
+  if (!project) {
+    throw new ApiError(httpStatus.SERVICE_UNAVAILABLE, 'Failed to create project');
+  }
+
+  // run project in pando service
+  res.status(httpStatus.CREATED).send({ project });
 });
 
 const getProjects = catchAsync(async (req, res) => {

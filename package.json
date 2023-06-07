@@ -11,7 +11,9 @@
     "node": ">=12.0.0"
   },
   "nodemonConfig": {
-    "ignore": ["uploads/*"]
+    "ignore": [
+      "uploads/*"
+    ]
   },
   "scripts": {
     "start": "pm2 start ecosystem.config.json --no-daemon",
@@ -54,6 +56,8 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.342.0",
     "async.util.setimmediate": "^0.5.2",
+    "aws-sdk": "^2.1392.0",
+    "axios": "^1.4.0",
     "bcryptjs": "^2.4.3",
     "browserify": "^17.0.0",
     "compression": "^1.7.4",
