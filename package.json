@@ -10,6 +10,9 @@
   "engines": {
     "node": ">=12.0.0"
   },
+  "nodemonConfig": {
+    "ignore": ["uploads/*"]
+  },
   "scripts": {
     "start": "pm2 start ecosystem.config.json --no-daemon",
     "dev": "cross-env NODE_ENV=development nodemon src/index.js",
@@ -52,6 +55,7 @@
     "@aws-sdk/client-s3": "^3.342.0",
     "async.util.setimmediate": "^0.5.2",
     "bcryptjs": "^2.4.3",
+    "browserify": "^17.0.0",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -77,6 +81,8 @@
     "socket.io": "^4.6.1",
     "swagger-jsdoc": "^6.0.8",
     "swagger-ui-express": "^4.1.6",
+    "uglifyify": "^5.0.2",
+    "uuid": "^9.0.0",
     "validator": "^13.0.0",
     "winston": "^3.2.1",
     "xss-clean": "^0.1.1"
