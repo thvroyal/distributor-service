@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const http = require('http');
-const greenLockExpress = require('greenlock-express');
 const app = require('./app');
 const config = require('./config/config');
 const logger = require('./config/logger');
@@ -12,19 +11,9 @@ mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
 
   server = http.createServer(app);
   initSocket(server);
-  if (config.env !== 'production') {
-    server.listen(config.port, () => {
-      logger.info(`Listening to port ${config.port}`);
-    });
-  } else {
-    greenLockExpress
-      .init({
-        packageRoot: __dirname,
-        configDir: '../greenlock.d',
-        cluster: true,
-      })
-      .serve(app);
-  }
+  server.listen(config.port, () => {
+    logger.info(`Listening to port ${config.port}`);
+  });
 });
 
 const exitHandler = () => {
