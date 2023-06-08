@@ -13,8 +13,8 @@ mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
 
   if (config.env === 'production') {
     const options = {
-      key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
-      cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem')),
+      key: fs.readFileSync(path.join(process.cwd(), 'cert', 'key.pem')),
+      cert: fs.readFileSync(path.join(process.cwd(), 'cert', 'cert.pem')),
     };
     server = http.createServer(options, app);
   } else {
