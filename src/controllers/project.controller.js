@@ -5,7 +5,9 @@ const { v4 } = require('uuid');
 const catchAsync = require('../utils/catchAsync');
 const { bundle } = require('../utils/bundle');
 const ApiError = require('../utils/ApiError');
-const { createProject } = require('../services/project.service');
+const projectService = require('../services/project.service');
+const pick = require('../utils/pick');
+const logger = require('../config/logger');
 
 const create = catchAsync(async (req, res) => {
   const { inputFile, sourceFile } = req.files;
@@ -36,7 +38,7 @@ const create = catchAsync(async (req, res) => {
     };
 
     // record to database
-    const project = await createProject(newProject);
+    const project = await projectService.createProject(newProject);
 
     if (!project) {
       throw new ApiError(httpStatus.SERVICE_UNAVAILABLE, 'Failed to create project');
@@ -47,6 +49,24 @@ const create = catchAsync(async (req, res) => {
   });
 });
 
+const getProjects = catchAsync(async (req, res) => {
+  const filter = pick(req.query, ['name', 'id']);
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  const projects = await projectService.getProjects(filter, options);
+  res.send({ projects, metadata: {} });
+});
+
+const getProjectById = catchAsync(async (req, res) => {
+  logger.info(`Finding project with id: ${req.params.projectId}`);
+  const project = await projectService.getProjectById(req.params.projectId);
+  if (!project) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
+  }
+  res.send(project);
+});
+
 module.exports = {
   create,
+  getProjects,
+  getProjectById,
 };
