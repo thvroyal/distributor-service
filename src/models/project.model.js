@@ -3,6 +3,10 @@ const { toJSON } = require('./plugins');
 
 const projectSchema = mongoose.Schema(
   {
+    id: {
+      type: String,
+      required: true,
+    },
     name: {
       type: String,
       required: true,
@@ -11,7 +15,7 @@ const projectSchema = mongoose.Schema(
     categories: {
       type: [String],
     },
-    folder: {
+    port: {
       type: String,
       required: true,
     },
