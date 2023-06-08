@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
 const app = require('./app');
 const config = require('./config/config');
 const logger = require('./config/logger');
@@ -9,7 +11,15 @@ let server;
 mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
   logger.info('Connected to MongoDB');
 
-  server = http.createServer(app);
+  if (config.env === 'production') {
+    const options = {
+      key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
+      cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem')),
+    };
+    server = http.createServer(options, app);
+  } else {
+    server = http.createServer(app);
+  }
   initSocket(server);
   server.listen(config.port, () => {
     logger.info(`Listening to port ${config.port}`);
