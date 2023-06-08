@@ -23,7 +23,7 @@ mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
         configDir: '../greenlock.d',
         cluster: true,
       })
-      .serve(server);
+      .serve(app);
   }
 });
 
