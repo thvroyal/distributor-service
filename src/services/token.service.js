@@ -77,14 +77,14 @@ const generateAuthTokens = async (user, res) => {
     res.cookie('refreshToken', refreshToken, {
       maxAge: config.jwt.refreshExpirationDays * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: 'none',
     });
 
     res.cookie('accessToken', accessToken, {
       maxAge: config.jwt.accessExpirationMinutes * 60 * 1000,
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: 'none',
     });
   }
