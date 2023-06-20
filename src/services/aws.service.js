@@ -1,19 +1,17 @@
-const AWS = require('aws-sdk');
-const fs = require('fs');
-const fssync = require('fs').promises;
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const httpStatus = require('http-status');
+const fs = require('fs');
 const ApiError = require('../utils/ApiError');
-// Set up AWS configuration with your credentials
-AWS.config.update({
-  accessKeyId: 'AKIAV6JUFBZ7HTPRPCRR',
-  secretAccessKey: '4abKrOR+S7x4B59WtfKWciXq+IZTBEpTm533359h',
+
+const S3 = new S3Client({
   region: 'ap-southeast-2',
+  credentials: {
+    accessKeyId: 'AKIAV6JUFBZ7HTPRPCRR',
+    secretAccessKey: '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',
+  },
 });
 
-// Create an instance of the S3 service
-const s3 = new AWS.S3();
-
-async function deleteFile(folderPath) {
+async function deleteUploadFolder(folderPath) {
   try {
     fs.rmdirSync(folderPath, { recursive: true });
   } catch (err) {
@@ -21,13 +19,19 @@ async function deleteFile(folderPath) {
   }
 }
 
-// Function to create a folder (S3 bucket is a flat structure, so "folders" are essentially object keys)
 const createFolder = async (folderName) => {
   const params = {
     Bucket: 'mybucketforpando',
     Key: `${folderName}/`,
   };
-  await s3.putObject(params).promise();
+
+  const command = new PutObjectCommand(params);
+
+  try {
+    await S3.send(command);
+  } catch (error) {
+    throw new ApiError(httpStatus.SERVICE_UNAVAILABLE, 'Failed to create folder');
+  }
 };
 
 // Function to upload a file to a specific folder in S3
@@ -40,7 +44,9 @@ const uploadFile = async (folderName, uploadFolder, name) => {
     Body: fileContent,
   };
 
-  await s3.upload(params).promise();
+  const command = new PutObjectCommand(params);
+
+  await S3.send(command);
 };
 
 const uploadToS3 = async (folderName, uploadFolder) => {
@@ -48,12 +54,11 @@ const uploadToS3 = async (folderName, uploadFolder) => {
     await createFolder(folderName);
     await uploadFile(folderName, uploadFolder, 'input.txt');
     await uploadFile(folderName, uploadFolder, 'source.js');
+    await deleteUploadFolder(uploadFolder);
 
-    console.log('Upload file to S3: input.txt, source.js');
-
-    // await deleteFile(`${uploadFolder}`);
+    // console.log('Upload file to S3: input.txt, source.js');
   } catch (error) {
-    throw new ApiError(httpStatus.SERVICE_UNAVAILABLE, 'Failed to create');
+    throw new ApiError(httpStatus.SERVICE_UNAVAILABLE, 'Failed to create project');
   }
 };
 
