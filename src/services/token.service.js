@@ -74,18 +74,20 @@ const generateAuthTokens = async (user, res) => {
   await saveToken(refreshToken, user.id, refreshTokenExpires, tokenTypes.REFRESH);
 
   if (res) {
+    const isProduction = config.env === 'production';
+
     res.cookie('refreshToken', refreshToken, {
       maxAge: config.jwt.refreshExpirationDays * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      // secure: true,
-      // sameSite: 'none',
+      secure: isProduction,
+      sameSite: isProduction ? 'Strict' : 'Lax',
     });
 
     res.cookie('accessToken', accessToken, {
       maxAge: config.jwt.accessExpirationMinutes * 60 * 1000,
       httpOnly: true,
-      // secure: true,
-      // sameSite: 'none',
+      secure: isProduction,
+      sameSite: isProduction ? 'Strict' : 'Lax',
     });
   }
 
