@@ -43,7 +43,7 @@ app.use(mongoSanitize());
 app.use(compression());
 
 // enable cors with options set cookies
-app.use(cors({ credentials: true, origin: true }));
+app.use(cors({ credentials: true, origin: '*' }));
 app.options('*', cors());
 
 // jwt authentication
