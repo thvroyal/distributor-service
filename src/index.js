@@ -4,6 +4,7 @@ const app = require('./app');
 const config = require('./config/config');
 const logger = require('./config/logger');
 const initSocket = require('./socket');
+const gRPCServer = require('./utils/GRPCServer');
 
 let server;
 mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
@@ -15,6 +16,8 @@ mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
     logger.info(`Listening to port ${config.port}`);
   });
 });
+
+gRPCServer.start(50051);
 
 const exitHandler = () => {
   if (server) {

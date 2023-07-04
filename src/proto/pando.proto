@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package io.mark.grpc.grpcChat;
+
+service MyService {
+  rpc Ping(Empty) returns (Response) {}
+  rpc Chat(stream Project) returns (stream ChatMessage) {}
+  rpc RunProject(stream Response) returns (stream Project) {}
+}
+
+message Empty {}
+message ChatMessage {
+  string content = 1;
+}
+
+message Project {
+  string id = 1;
+}
+
+message Response {
+  int32 status = 1;
+  int32 port = 2;
+  optional string msg = 3;
+}
+
+

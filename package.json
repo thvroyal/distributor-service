@@ -55,6 +55,8 @@
   ],
   "dependencies": {
     "@aws-sdk/client-s3": "^3.342.0",
+    "@grpc/grpc-js": "^1.8.17",
+    "@grpc/proto-loader": "^0.7.7",
     "async.util.setimmediate": "^0.5.2",
     "aws-sdk": "^2.1392.0",
     "axios": "^1.4.0",

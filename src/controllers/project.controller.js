@@ -8,14 +8,13 @@ const ApiError = require('../utils/ApiError');
 const projectService = require('../services/project.service');
 const pick = require('../utils/pick');
 const logger = require('../config/logger');
+const GRPCServer = require('../utils/GRPCServer');
+const { uploadToS3 } = require('../services/aws.service');
 
 const create = catchAsync(async (req, res) => {
   const { inputFile, sourceFile } = req.files;
   const { name, categories } = req.body;
   const id = v4();
-
-  console.log('\nReceived request');
-  console.log(req.body);
 
   const uploadFolder = path.join(process.cwd(), '/uploads', `${id}`);
   if (!fs.existsSync(uploadFolder)) {
@@ -42,16 +41,18 @@ const create = catchAsync(async (req, res) => {
     id,
   };
 
-  console.log(`Save files to:${uploadFolder}`);
+  await uploadToS3(id, uploadFolder);
+  const response = await GRPCServer.createProject(id);
+  logger.info(`Project ${name} is serving at port ${response.port}`);
 
+  newProject.port = response.port;
   // record to database
-  const project = await projectService.createProject(newProject, id, uploadFolder);
+  const project = await projectService.createProject(newProject);
 
   if (!project) {
     throw new ApiError(httpStatus.SERVICE_UNAVAILABLE, 'Failed to create project');
   }
 
-  // run project in pando service
   res.status(httpStatus.CREATED).send({ project });
 });
 
