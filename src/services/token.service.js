@@ -74,21 +74,21 @@ const generateAuthTokens = async (user, res) => {
   await saveToken(refreshToken, user.id, refreshTokenExpires, tokenTypes.REFRESH);
 
   if (res) {
-    const isProduction = config.env === 'production';
-
-    res.cookie('refreshToken', refreshToken, {
+    const cookiesOption = {
       maxAge: config.jwt.refreshExpirationDays * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      secure: isProduction,
-      // sameSite: isProduction ? 'None' : 'Lax',
-    });
+    };
 
-    res.cookie('accessToken', accessToken, {
-      maxAge: config.jwt.accessExpirationMinutes * 60 * 1000,
-      httpOnly: true,
-      secure: isProduction,
-      // sameSite: isProduction ? 'None' : 'Lax',
-    });
+    const isProduction = config.env === 'production';
+
+    if (isProduction) {
+      cookiesOption.secure = true;
+      cookiesOption.domain = '.computehub.xyz';
+      cookiesOption.path = '/';
+    }
+
+    res.cookie('refreshToken', refreshToken, cookiesOption);
+    res.cookie('accessToken', accessToken, cookiesOption);
   }
 
   return {
