@@ -20,7 +20,8 @@ message Project {
 message Response {
   int32 status = 1;
   int32 port = 2;
-  optional string msg = 3;
+  string host = 3;
+  optional string msg = 4;
 }
 
 

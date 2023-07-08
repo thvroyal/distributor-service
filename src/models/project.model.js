@@ -15,6 +15,10 @@ const projectSchema = mongoose.Schema(
     categories: {
       type: [String],
     },
+    host: {
+      type: String,
+      required: true,
+    },
     port: {
       type: String,
       required: true,

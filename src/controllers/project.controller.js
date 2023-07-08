@@ -43,9 +43,10 @@ const create = catchAsync(async (req, res) => {
 
   await uploadToS3(id, uploadFolder);
   const response = await GRPCServer.createProject(id);
-  logger.info(`Project ${name} is serving at port ${response.port}`);
+  logger.info(`Project ${name} is serving at ${response.host}:${response.port}`);
 
   newProject.port = response.port;
+  newProject.host = response.host;
   // record to database
   const project = await projectService.createProject(newProject);
 
