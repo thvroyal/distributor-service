@@ -3,7 +3,7 @@ const { toJSON } = require('./plugins');
 
 const projectSchema = mongoose.Schema(
   {
-    id: {
+    bucketId: {
       type: String,
       required: true,
     },

@@ -14,9 +14,9 @@ const { uploadToS3 } = require('../services/aws.service');
 const create = catchAsync(async (req, res) => {
   const { inputFile, sourceFile } = req.files;
   const { name, categories } = req.body;
-  const id = v4();
+  const bucketId = v4();
 
-  const uploadFolder = path.join(process.cwd(), '/uploads', `${id}`);
+  const uploadFolder = path.join(process.cwd(), '/uploads', `${bucketId}`);
   if (!fs.existsSync(uploadFolder)) {
     fs.mkdirSync(uploadFolder, { recursive: true });
   }
@@ -38,11 +38,11 @@ const create = catchAsync(async (req, res) => {
   const newProject = {
     name,
     categories,
-    id,
+    bucketId,
   };
 
-  await uploadToS3(id, uploadFolder);
-  const response = await GRPCServer.createProject(id);
+  await uploadToS3(bucketId, uploadFolder);
+  const response = await GRPCServer.createProject(bucketId);
   logger.info(`Project ${name} is serving at ${response.host}:${response.port}`);
 
   newProject.port = response.port;
