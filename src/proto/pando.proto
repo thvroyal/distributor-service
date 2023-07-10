@@ -1,17 +1,19 @@
 syntax = "proto3";
 
-package io.mark.grpc.grpcChat;
+package compute_engine;
 
 service MyService {
-  rpc Ping(Empty) returns (Response) {}
-  rpc Chat(stream Project) returns (stream ChatMessage) {}
   rpc RunProject(stream Response) returns (stream Project) {}
+  rpc AddOutput(Output) returns (Empty) {}
+}
+
+message Output {
+  string value = 1;
+  string createdAt = 2;
+  string bucketId = 3;
 }
 
 message Empty {}
-message ChatMessage {
-  string content = 1;
-}
 
 message Project {
   string id = 1;

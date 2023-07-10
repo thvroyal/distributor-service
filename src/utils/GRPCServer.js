@@ -2,6 +2,7 @@ const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const path = require('path');
 const logger = require('../config/logger');
+const { outputService } = require('../services/index');
 
 const PROTO_PATH = path.join(process.cwd(), '/src/proto/pando.proto');
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
@@ -11,20 +12,26 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   defaults: true,
   oneofs: true,
 });
-const serverProto = grpc.loadPackageDefinition(packageDefinition).io.mark.grpc.grpcChat;
+const computeEngine = grpc.loadPackageDefinition(packageDefinition).compute_engine;
 
 class GRPCServer {
   constructor() {
     this.server = new grpc.Server();
-    this.server.addService(serverProto.MyService.service, {
-      RunProject: this._runProject.bind(this),
+    this.server.addService(computeEngine.MyService.service, {
+      runProject: this.runProject.bind(this),
+      addOutput: (call, callback) => {
+        const { value, createdAt, bucketId } = call.request;
+        outputService.addOutput({ bucketId, createdAt, value });
+
+        callback(null, {});
+      },
     });
 
     // Initialize call variable as an instance variable
     this.call = [];
   }
 
-  _runProject(call) {
+  runProject(call) {
     this.call.push(call);
 
     call.on('end', () => {
