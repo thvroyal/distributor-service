@@ -95,9 +95,9 @@ const verifyEmail = async (verifyEmailToken) => {
  * @param {string} accessToken
  * @returns {Promise}
  */
-const getUserFromAccessToken = async (accessToken) => {
+const getUserFromRefreshToken = async (refreshToken) => {
   try {
-    const accessTokenDoc = await tokenService.verifyToken(accessToken, tokenTypes.ACCESS);
+    const accessTokenDoc = await tokenService.verifyToken(refreshToken, tokenTypes.REFRESH);
     const user = await userService.getUserById(accessTokenDoc.user);
     if (!user) {
       throw new Error();
@@ -114,5 +114,5 @@ module.exports = {
   refreshAuth,
   resetPassword,
   verifyEmail,
-  getUserFromAccessToken,
+  getUserFromRefreshToken,
 };

@@ -23,6 +23,11 @@ const projectSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    author: {
+      id: mongoose.Types.ObjectId,
+      name: String,
+      email: String,
+    },
   },
   {
     timestamps: true,

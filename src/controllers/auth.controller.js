@@ -51,8 +51,8 @@ const verifyEmail = catchAsync(async (req, res) => {
 });
 
 const getCurrentUser = catchAsync(async (req, res) => {
-  const { accessToken } = req.cookies;
-  const user = await authService.getUserFromAccessToken(accessToken);
+  const { refreshToken } = req.cookies;
+  const user = await authService.getUserFromRefreshToken(refreshToken);
   res.send(user);
 });
 

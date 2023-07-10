@@ -6,6 +6,7 @@ const catchAsync = require('../utils/catchAsync');
 const { bundle } = require('../utils/bundle');
 const ApiError = require('../utils/ApiError');
 const projectService = require('../services/project.service');
+const authService = require('../services/auth.service');
 const pick = require('../utils/pick');
 const logger = require('../config/logger');
 const GRPCServer = require('../utils/GRPCServer');
@@ -14,6 +15,7 @@ const { uploadToS3 } = require('../services/aws.service');
 const create = catchAsync(async (req, res) => {
   const { inputFile, sourceFile } = req.files;
   const { name, categories } = req.body;
+  const { refreshToken } = req.cookies;
   const bucketId = v4();
 
   const uploadFolder = path.join(process.cwd(), '/uploads', `${bucketId}`);
@@ -34,11 +36,17 @@ const create = catchAsync(async (req, res) => {
       throw new ApiError(httpStatus.SERVICE_UNAVAILABLE, 'Failed to bundle files');
     }
   });
+  const author = await authService.getUserFromRefreshToken(refreshToken);
 
   const newProject = {
     name,
     categories,
     bucketId,
+    author: {
+      id: author._id,
+      name: author.name,
+      email: author.email,
+    },
   };
 
   await uploadToS3(bucketId, uploadFolder);
