@@ -6,7 +6,7 @@ const messageSchema = mongoose.Schema({
     projectId: String,
     contributions: [{
         timestamp: String,
-        contribution: {
+        contribution: [{
             id: String,
             cpuTime: Number,
             dataTransferTime: Number,
@@ -32,7 +32,7 @@ const messageSchema = mongoose.Schema({
                 maximum: Number,
                 minimum: Number,
             }
-        }
+        }]
     }]
 });
 
