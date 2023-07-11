@@ -5,7 +5,7 @@ package compute_engine;
 service MyService {
   rpc RunProject(stream Response) returns (stream Project) {}
   rpc AddOutput(Output) returns (Empty) {}
-  rpc UpdateProjectStatus(UpdateProjectStatus) returns (Empty) {}
+  rpc Report(ReportData) returns (Empty) {}
 }
 
 message Output {
@@ -28,6 +28,6 @@ message Response {
   optional string msg = 4;
 }
 
-message UpdateProjectStatus {
+message ReportData {
   string data = 1;
 }
