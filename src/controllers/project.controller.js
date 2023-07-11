@@ -11,6 +11,7 @@ const pick = require('../utils/pick');
 const logger = require('../config/logger');
 const GRPCServer = require('../utils/GRPCServer');
 const { uploadToS3 } = require('../services/aws.service');
+const { messageService } = require('../services');
 
 const create = catchAsync(async (req, res) => {
   const { inputFile, sourceFile } = req.files;
@@ -57,9 +58,14 @@ const create = catchAsync(async (req, res) => {
   newProject.host = response.host;
   // record to database
   const project = await projectService.createProject(newProject);
+  const projectReport = await messageService.createProjectStatus(newProject.bucketId);
 
   if (!project) {
     throw new ApiError(httpStatus.SERVICE_UNAVAILABLE, 'Failed to create project');
+  }
+
+  if (!projectReport) {
+    throw new ApiError(httpStatus.SERVICE_UNAVAILABLE, 'Failed to create project report');
   }
 
   res.status(httpStatus.CREATED).send({ project });
