@@ -2,38 +2,47 @@
 const { Message } = require('../models');
 
 /**
- * Create a project
+ * Report project status
  * @param {string} projectId
  * @returns {Promise<Message>}
  */
-const updateProjectStatus = async (data) => {
+const reportProjectStatus = async (data, bucketId) => {
+  const contribution = Object.values(JSON.parse(data));
 
-    const contribution = Object.values(JSON.parse(data))
+  const updateData = {
+    timestamp: new Date().toISOString(),
+    contribution,
+  };
 
-    const updateData = {
-        timestamp: new Date(),
-        contribution
-    }
-    const id = 'xxx'
-    const project = await Message.findOne({ projectId: id })
+  const reportData = await Message.findOne({ projectId: bucketId });
 
-    project.contributions.push(
-        updateData
-    );
+  reportData.contributions.push(updateData);
 
-    await project.save()
-    return project
+  await reportData.save();
+  return reportData;
 };
 
-const createProjectStatus = async (data) => {
-    const message = {
-        projectId: data,
-        contributions: []
-    }
-    return Message.create(message)
-}
+/**
+ * Create a report document
+ * @param {string} bucketId
+ * @returns {Promise<Message>}
+ */
+const createProjectStatus = async (bucketId) => {
+  const message = {
+    projectId: bucketId,
+    contributions: [],
+  };
+  return Message.create(message);
+};
+
+const getReportToAnalyzer = async (bucketId) => {
+  const reportData = await Message.findOne({ projectId: bucketId });
+  const lastestUpdate = [...reportData.contributions].pop();
+  return lastestUpdate;
+};
 
 module.exports = {
-    updateProjectStatus,
-    createProjectStatus
+  reportProjectStatus,
+  createProjectStatus,
+  getReportToAnalyzer,
 };
