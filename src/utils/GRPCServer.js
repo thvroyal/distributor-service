@@ -26,9 +26,9 @@ class GRPCServer {
         callback(null, {});
       },
       report: (call, callback) => {
-        const { data } = call.request;
+        const { data, bucketId } = call.request;
 
-        messageService.updateProjectStatus(data);
+        messageService.reportProjectStatus(data, bucketId);
 
         callback(null, {});
       },

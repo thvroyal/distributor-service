@@ -30,4 +30,5 @@ message Response {
 
 message ReportData {
   string data = 1;
+  string bucketId = 2;
 }
