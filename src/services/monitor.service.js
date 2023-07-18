@@ -1,10 +1,10 @@
 /* eslint-disable prettier/prettier */
-const { Message } = require('../models');
+const { Monitor } = require('../models');
 
 /**
  * Report project status
  * @param {string} projectId
- * @returns {Promise<Message>}
+ * @returns {Promise<Monitor>}
  */
 const reportProjectStatus = async (data, bucketId) => {
   const contribution = Object.values(JSON.parse(data));
@@ -14,7 +14,7 @@ const reportProjectStatus = async (data, bucketId) => {
     contribution,
   };
 
-  const reportData = await Message.findOne({ projectId: bucketId });
+  const reportData = await Monitor.findOne({ projectId: bucketId });
 
   reportData.contributions.push(updateData);
 
@@ -25,20 +25,20 @@ const reportProjectStatus = async (data, bucketId) => {
 /**
  * Create a report document
  * @param {string} bucketId
- * @returns {Promise<Message>}
+ * @returns {Promise<Monitor>}
  */
-const createProjectStatus = async (bucketId) => {
+const createProjectStatus = async (bucketId, projectName) => {
   const message = {
     projectId: bucketId,
+    projectName,
     contributions: [],
   };
-  return Message.create(message);
+  return Monitor.create(message);
 };
 
 const getReportToAnalyzer = async (bucketId) => {
-  const reportData = await Message.findOne({ projectId: bucketId });
-  const lastestUpdate = [...reportData.contributions].pop();
-  return lastestUpdate;
+  const reportData = await Monitor.findOne({ projectId: bucketId });
+  return reportData.contributions;
 };
 
 module.exports = {

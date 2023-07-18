@@ -1,9 +1,9 @@
 const catchAsync = require('../utils/catchAsync');
-const { messageService } = require('../services');
+const { monitorService } = require('../services');
 
 const getProjectStatus = catchAsync(async (req, res) => {
   const { bucketId } = req.query;
-  const projectReport = await messageService.getReportToAnalyzer(bucketId);
+  const projectReport = await monitorService.getReportToAnalyzer(bucketId);
   res.send({ projectReport });
 });
 

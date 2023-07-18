@@ -1,9 +1,9 @@
 const express = require('express');
 const auth = require('../../middlewares/auth');
-const messageController = require('../../controllers/message.controller');
+const monitorController = require('../../controllers/monitor.controller');
 
 const router = express.Router();
 
-router.route('/').get(messageController.getProjectStatus);
+router.route('/').get(monitorController.getProjectStatus);
 
 module.exports = router;
