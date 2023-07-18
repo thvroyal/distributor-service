@@ -79,7 +79,6 @@ const getProjects = catchAsync(async (req, res) => {
 });
 
 const getProjectById = catchAsync(async (req, res) => {
-  logger.info(`Finding project with id: ${req.params.projectId}`);
   const project = await projectService.getProjectById(req.params.projectId);
   if (!project) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');

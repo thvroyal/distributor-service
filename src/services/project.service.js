@@ -25,7 +25,7 @@ const getProjects = async (filter = {}, options) => {
  * @returns {Promise<Project>}
  */
 const getProjectById = async (id) => {
-  return Project.findById(id);
+  return Project.findById(id).lean();
 };
 
 module.exports = {
