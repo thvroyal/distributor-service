@@ -28,6 +28,10 @@ const projectSchema = mongoose.Schema(
       name: String,
       email: String,
     },
+    computeInfo: {
+      totalInput: Number,
+      totalOutput: Number,
+    },
   },
   {
     timestamps: true,

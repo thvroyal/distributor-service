@@ -2,7 +2,7 @@ const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const path = require('path');
 const logger = require('../config/logger');
-const { outputService, messageService } = require('../services/index');
+const { outputService, monitorService } = require('../services/index');
 
 const PROTO_PATH = path.join(process.cwd(), '/src/proto/pando.proto');
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
@@ -26,9 +26,9 @@ class GRPCServer {
         callback(null, {});
       },
       report: (call, callback) => {
-        const { data } = call.request;
+        const { data, bucketId } = call.request;
 
-        messageService.updateProjectStatus(data);
+        monitorService.reportProjectStatus(data, bucketId);
 
         callback(null, {});
       },
