@@ -60,9 +60,10 @@ const create = catchAsync(async (req, res) => {
 
   newProject.port = response.port;
   newProject.host = response.host;
+  newProject.computeInfo.totalInput = 1;
   // record to database
   const project = await projectService.createProject(newProject);
-  const projectReport = await monitorService.createProjectStatus(newProject.bucketId, newProject.name);
+  const projectReport = await monitorService.createProjectStatus(newProject);
 
   if (!project) {
     throw new ApiError(httpStatus.SERVICE_UNAVAILABLE, 'Failed to create project');

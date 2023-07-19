@@ -15,8 +15,22 @@ const reportProjectStatus = async (data, bucketId) => {
   };
 
   const reportData = await Monitor.findOne({ projectId: bucketId });
+  const outputPerUser = reportData.totalOutput;
+
+  contribution.forEach((user) => {
+    const existingUserIndex = outputPerUser.findIndex((obj) => obj.userId === user.userId);
+    if (existingUserIndex !== -1) {
+      outputPerUser[existingUserIndex].numberOfOutput = Number(user.totalOutput);
+    } else {
+      outputPerUser.push({
+        userId: user.userId,
+        numberOfOutput: user.numberOfOutput,
+      });
+    }
+  });
 
   reportData.contributions.push(updateData);
+  reportData.totalOutput = outputPerUser;
 
   await reportData.save();
   return reportData;
@@ -27,10 +41,14 @@ const reportProjectStatus = async (data, bucketId) => {
  * @param {string} bucketId
  * @returns {Promise<Monitor>}
  */
-const createProjectStatus = async (bucketId, projectName) => {
+const createProjectStatus = async (newProject) => {
+  const { name: projectName, bucketId, computeInfo } = newProject;
+
   const message = {
     projectId: bucketId,
     projectName,
+    totalInput: 1000,
+    totalOutput: [],
     contributions: [],
   };
   return Monitor.create(message);
@@ -38,7 +56,7 @@ const createProjectStatus = async (bucketId, projectName) => {
 
 const getReportToAnalyzer = async (bucketId) => {
   const reportData = await Monitor.findOne({ projectId: bucketId });
-  return reportData.contributions;
+  return reportData;
 };
 
 module.exports = {
