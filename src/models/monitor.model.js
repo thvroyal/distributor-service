@@ -5,6 +5,7 @@ const { toJSON } = require('./plugins');
 const monitorSchema = mongoose.Schema({
   projectId: String,
   projectName: String,
+  totalInput: Number,
   contributions: [
     {
       timestamp: String,
@@ -13,6 +14,7 @@ const monitorSchema = mongoose.Schema({
           userId: String,
           userName: String,
           cpuTime: Number,
+          totalOutput: Number,
           dataTransferTime: Number,
           nbItems: Number,
           throughput: Number,
