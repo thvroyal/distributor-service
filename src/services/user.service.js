@@ -11,6 +11,8 @@ const createUser = async (userBody) => {
   if (await User.isEmailTaken(userBody.email)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
+  // eslint-disable-next-line no-param-reassign
+  userBody.totalOutput = [{ date: new Date().toLocaleDateString(), totalOutput: 0 }];
   return User.create(userBody);
 };
 
@@ -79,6 +81,25 @@ const deleteUserById = async (userId) => {
   return user;
 };
 
+const updateUserOutput = async (data) => {
+  const contributions = Object.values(JSON.parse(data));
+  const date = new Date().toLocaleDateString();
+
+  contributions.forEach(async (contribution) => {
+    const { userId, totalOutput } = contribution;
+    const user = await getUserById(userId);
+
+    const isSameDay = user.totalOutput[user.totalOutput.length - 1].date === date;
+
+    if (isSameDay === true) {
+      user.totalOutput[user.totalOutput.length - 1].totalOutput = totalOutput;
+    } else {
+      user.totalOutput.push({ date, totalOutput });
+    }
+    await user.save();
+  });
+};
+
 module.exports = {
   createUser,
   queryUsers,
@@ -86,4 +107,5 @@ module.exports = {
   getUserByEmail,
   updateUserById,
   deleteUserById,
+  updateUserOutput,
 };
