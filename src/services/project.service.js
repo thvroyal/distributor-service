@@ -28,8 +28,16 @@ const getProjectById = async (id) => {
   return Project.findById(id);
 };
 
+const updateProjectTotalOutput = async (projectId, totalOutput) => {
+  const project = await getProjectById(projectId);
+  project.computeInfo.totalOutput = totalOutput;
+  await project.save();
+  return project;
+};
+
 module.exports = {
   createProject,
   getProjects,
   getProjectById,
+  updateProjectTotalOutput,
 };
