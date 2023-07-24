@@ -15,7 +15,7 @@ const { monitorService } = require('../services');
 
 const create = catchAsync(async (req, res) => {
   const { inputFile, sourceFile } = req.files;
-  const { name, categories } = req.body;
+  const { name, categories, inputCount } = req.body;
   const { refreshToken } = req.cookies;
   const bucketId = v4();
 
@@ -49,7 +49,7 @@ const create = catchAsync(async (req, res) => {
       email: author.email,
     },
     computeInfo: {
-      totalInput: 1000,
+      totalInput: inputCount,
       totalOutput: 0,
     },
   };
@@ -60,7 +60,6 @@ const create = catchAsync(async (req, res) => {
 
   newProject.port = response.port;
   newProject.host = response.host;
-  newProject.computeInfo.totalInput = 1;
   // record to database
   const project = await projectService.createProject(newProject);
   const projectReport = await monitorService.createProjectStatus(newProject);
