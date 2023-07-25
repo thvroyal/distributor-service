@@ -1,3 +1,4 @@
+const logger = require('../config/logger');
 const { Project } = require('../models');
 
 /**
@@ -28,8 +29,12 @@ const getProjectById = async (id) => {
   return Project.findById(id);
 };
 
-const updateProjectTotalOutput = async (projectId, totalOutput) => {
-  const project = await getProjectById(projectId);
+const updateProjectTotalOutput = async (bucketId, totalOutput) => {
+  const project = await Project.findOne({ bucketId });
+  if (!project) {
+    logger.error(`Not found project with bucketId: ${bucketId}`);
+    return;
+  }
   project.computeInfo.totalOutput = totalOutput;
   await project.save();
   return project;
