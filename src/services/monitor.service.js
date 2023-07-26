@@ -24,7 +24,7 @@ const reportProjectStatus = async (data, bucketId) => {
     } else {
       outputPerUser.push({
         userId: user.userId,
-        numberOfOutput: user.numberOfOutput,
+        numberOfOutput: Number(user.totalOutput),
       });
     }
   });
@@ -47,7 +47,7 @@ const createProjectStatus = async (newProject) => {
   const message = {
     projectId: bucketId,
     projectName,
-    totalInput: 1000,
+    totalInput: computeInfo.totalInput,
     totalOutput: [],
     contributions: [],
   };
