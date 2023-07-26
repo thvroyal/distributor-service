@@ -28,8 +28,10 @@ class GRPCServer {
       report: (call, callback) => {
         const { data, bucketId } = call.request;
 
-        monitorService.reportProjectStatus(data, bucketId);
-        projectService.updateProjectTotalOutput(bucketId, data);
+        monitorService.reportProjectStatus(data, bucketId).then((result) => {
+          projectService.updateProjectTotalOutput(result, bucketId);
+        });
+
         userService.updateUserOutput(data);
 
         callback(null, {});

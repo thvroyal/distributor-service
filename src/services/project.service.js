@@ -33,12 +33,18 @@ const getProjectByAuthor = async (authorId) => {
   return Project.find({ 'author.id': authorId });
 };
 
-const updateProjectTotalOutput = async (bucketId, totalOutput) => {
+const updateProjectTotalOutput = async (data, bucketId) => {
+  const totalOutput = data.totalOutput.reduce((acc, cur) => {
+    const curValue = Number(cur.numberOfOutput);
+    return acc + curValue;
+  }, 0);
+
   const project = await Project.findOne({ bucketId });
   if (!project) {
     logger.error(`Not found project with bucketId: ${bucketId}`);
     return;
   }
+
   project.computeInfo.totalOutput = totalOutput;
   await project.save();
   return project;
