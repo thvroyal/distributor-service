@@ -8,7 +8,7 @@ const jwtOptions = {
   jwtFromRequest: (req) => {
     let token = null;
     if (req && req.cookies) {
-      token = req.cookies.accessToken;
+      token = req.cookies.refreshToken;
     }
     return token;
   },
@@ -16,7 +16,7 @@ const jwtOptions = {
 
 const jwtVerify = async (payload, done) => {
   try {
-    if (payload.type !== tokenTypes.ACCESS) {
+    if (payload.type !== tokenTypes.REFRESH) {
       throw new Error('Invalid token type');
     }
     const user = await User.findById(payload.sub);

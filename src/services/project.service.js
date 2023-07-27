@@ -17,7 +17,7 @@ const createProject = async (userBody) => {
  * @returns {Promise<Project>}
  */
 const getProjects = async (filter = {}, options) => {
-  return Project.find(filter, options).exec();
+  return Project.find(filter, options).sort({ createdAt: 'desc' }).exec();
 };
 
 /**
@@ -27,6 +27,10 @@ const getProjects = async (filter = {}, options) => {
  */
 const getProjectById = async (id) => {
   return Project.findById(id);
+};
+
+const getProjectByAuthor = async (authorId) => {
+  return Project.find({ 'author.id': authorId });
 };
 
 const updateProjectTotalOutput = async (bucketId, totalOutput) => {
@@ -44,5 +48,6 @@ module.exports = {
   createProject,
   getProjects,
   getProjectById,
+  getProjectByAuthor,
   updateProjectTotalOutput,
 };
