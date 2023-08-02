@@ -11,7 +11,13 @@ router
   .route('/')
   .post(
     auth(),
-    upload.fields([{ name: 'name' }, { name: 'categories' }, { name: 'inputFile' }, { name: 'sourceFile' }]),
+    upload.fields([
+      { name: 'name' },
+      { name: 'categories' },
+      { name: 'inputFile' },
+      { name: 'sourceFile' },
+      { name: 'description' },
+    ]),
     projectController.create
   )
   .get(validate(projectValidation.getProjects), projectController.getProjects);

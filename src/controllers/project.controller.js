@@ -15,7 +15,7 @@ const { monitorService } = require('../services');
 
 const create = catchAsync(async (req, res) => {
   const { inputFile, sourceFile } = req.files;
-  const { name, categories, inputCount } = req.body;
+  const { name, categories, inputCount, description } = req.body;
   const { refreshToken } = req.cookies;
   const bucketId = v4();
 
@@ -43,6 +43,7 @@ const create = catchAsync(async (req, res) => {
     name,
     categories,
     bucketId,
+    description,
     author: {
       id: author._id,
       name: author.name,

@@ -15,6 +15,10 @@ const projectSchema = mongoose.Schema(
     categories: {
       type: [String],
     },
+    description: {
+      type: String,
+      required: true,
+    },
     host: {
       type: String,
       required: true,
