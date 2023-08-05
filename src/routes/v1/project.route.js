@@ -14,6 +14,7 @@ router
     upload.fields([
       { name: 'name' },
       { name: 'categories' },
+      { name: 'markdownFile' },
       { name: 'inputFile' },
       { name: 'sourceFile' },
       { name: 'description' },

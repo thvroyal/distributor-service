@@ -14,7 +14,7 @@ const { uploadToS3 } = require('../services/aws.service');
 const { monitorService } = require('../services');
 
 const create = catchAsync(async (req, res) => {
-  const { inputFile, sourceFile } = req.files;
+  const { markdownFile, inputFile, sourceFile } = req.files;
   const { name, categories, inputCount, description } = req.body;
   const { refreshToken } = req.cookies;
   const bucketId = v4();
@@ -23,6 +23,12 @@ const create = catchAsync(async (req, res) => {
   if (!fs.existsSync(uploadFolder)) {
     fs.mkdirSync(uploadFolder, { recursive: true });
   }
+
+  fs.rename(markdownFile[0].path, path.join(uploadFolder, `README.md`), (err) => {
+    if (err) {
+      throw new ApiError(httpStatus.SERVICE_UNAVAILABLE, 'Failed to save input file');
+    }
+  });
 
   fs.rename(inputFile[0].path, path.join(uploadFolder, `input.txt`), (err) => {
     if (err) {

@@ -52,12 +52,14 @@ const uploadFile = async (folderName, uploadFolder, name) => {
 const uploadToS3 = async (folderName, uploadFolder) => {
   try {
     await createFolder(folderName);
+    await uploadFile(folderName, uploadFolder, 'README.md');
     await uploadFile(folderName, uploadFolder, 'input.txt');
     await uploadFile(folderName, uploadFolder, 'source.js');
     await deleteUploadFolder(uploadFolder);
 
     // console.log('Upload file to S3: input.txt, source.js');
   } catch (error) {
+    // console.log(error);
     throw new ApiError(httpStatus.SERVICE_UNAVAILABLE, 'Failed to create project');
   }
 };
