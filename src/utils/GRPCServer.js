@@ -28,11 +28,15 @@ class GRPCServer {
       report: (call, callback) => {
         const { data, bucketId } = call.request;
 
-        monitorService.reportProjectStatus(data, bucketId).then((result) => {
-          projectService.updateProjectTotalOutput(result, bucketId);
-        });
+        if (data === 'error') {
+          projectService.updateProjectError(bucketId);
+        } else {
+          monitorService.reportProjectStatus(data, bucketId).then((result) => {
+            projectService.updateProjectTotalOutput(result, bucketId);
+          });
 
-        userService.updateUserOutput(data);
+          userService.updateUserOutput(data);
+        }
 
         callback(null, {});
       },

@@ -44,6 +44,7 @@ const create = catchAsync(async (req, res) => {
     categories,
     bucketId,
     description,
+    status: 'running',
     author: {
       id: author._id,
       name: author.name,

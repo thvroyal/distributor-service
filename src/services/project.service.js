@@ -10,6 +10,16 @@ const createProject = async (userBody) => {
   return Project.create(userBody);
 };
 
+const updateProjectError = async (bucketId) => {
+  const project = await Project.findOne({ bucketId });
+  if (!project) {
+    logger.error(`Not found project with bucketId: ${bucketId}`);
+    return;
+  }
+  project.status = 'error';
+  await project.save();
+};
+
 /**
  * Get all projects
  * @param {Object} filter
@@ -45,6 +55,10 @@ const updateProjectTotalOutput = async (data, bucketId) => {
     return;
   }
 
+  if (data.totalOutput === data.totalInput) {
+    project.status = 'completed';
+  }
+
   project.computeInfo.totalOutput = totalOutput;
   await project.save();
   return project;
@@ -56,4 +70,5 @@ module.exports = {
   getProjectById,
   getProjectByAuthor,
   updateProjectTotalOutput,
+  updateProjectError,
 };

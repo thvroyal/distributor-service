@@ -19,6 +19,10 @@ const projectSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    status: {
+      type: String,
+      enum: ['error', 'running', 'finished'],
+    },
     host: {
       type: String,
       required: true,
