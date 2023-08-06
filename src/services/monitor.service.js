@@ -1,6 +1,30 @@
 /* eslint-disable prettier/prettier */
 const { Monitor } = require('../models');
 
+const updateNumberOfOutput = async (userId, totalOutput, bucketId) => {
+  const reportData = await Monitor.findOne({ projectId: bucketId });
+  const outputPerUser = reportData.totalOutput;
+
+  // console.log(userId, totalOutput);
+
+  const existingUserIndex = outputPerUser.findIndex((obj) => obj.userId === userId);
+  if (existingUserIndex !== -1) {
+    outputPerUser[existingUserIndex].numberOfOutput = Number(totalOutput);
+  } else {
+    outputPerUser.push({
+      userId,
+      numberOfOutput: Number(totalOutput),
+    });
+  }
+
+  reportData.totalOutput = outputPerUser;
+  await reportData.save();
+
+  // console.log('outputPerUser', outputPerUser);
+
+  return reportData;
+};
+
 /**
  * Report project status
  * @param {string} projectId
@@ -15,22 +39,7 @@ const reportProjectStatus = async (data, bucketId) => {
   };
 
   const reportData = await Monitor.findOne({ projectId: bucketId });
-  const outputPerUser = reportData.totalOutput;
-
-  contribution.forEach((user) => {
-    const existingUserIndex = outputPerUser.findIndex((obj) => obj.userId === user.userId);
-    if (existingUserIndex !== -1) {
-      outputPerUser[existingUserIndex].numberOfOutput = Number(user.totalOutput);
-    } else {
-      outputPerUser.push({
-        userId: user.userId,
-        numberOfOutput: Number(user.totalOutput),
-      });
-    }
-  });
-
   reportData.contributions.push(updateData);
-  reportData.totalOutput = outputPerUser;
 
   await reportData.save();
   return reportData;
@@ -63,4 +72,5 @@ module.exports = {
   reportProjectStatus,
   createProjectStatus,
   getReportToAnalyzer,
+  updateNumberOfOutput,
 };
