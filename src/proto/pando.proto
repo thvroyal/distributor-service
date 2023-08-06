@@ -12,6 +12,8 @@ message Output {
   string value = 1;
   string createdAt = 2;
   string bucketId = 3;
+  string userId = 4;
+  string totalOutput = 5;
 }
 
 message Empty {}
