@@ -1,48 +1,54 @@
 /* eslint-disable prettier/prettier */
 const { Monitor } = require('../models');
-
-const updateNumberOfOutput = async (userId, totalOutput, bucketId) => {
-  const reportData = await Monitor.findOne({ projectId: bucketId });
-  const outputPerUser = reportData.totalOutput;
-
-  // console.log(userId, totalOutput);
-
-  const existingUserIndex = outputPerUser.findIndex((obj) => obj.userId === userId);
-  if (existingUserIndex !== -1) {
-    outputPerUser[existingUserIndex].numberOfOutput = Number(totalOutput);
-  } else {
-    outputPerUser.push({
-      userId,
-      numberOfOutput: Number(totalOutput),
-    });
-  }
-
-  reportData.totalOutput = outputPerUser;
-  await reportData.save();
-
-  // console.log('outputPerUser', outputPerUser);
-
-  return reportData;
-};
-
 /**
  * Report project status
  * @param {string} projectId
  * @returns {Promise<Monitor>}
  */
-const reportProjectStatus = async (data, bucketId) => {
-  const contribution = Object.values(JSON.parse(data));
 
-  const updateData = {
-    timestamp: new Date().toISOString(),
-    contribution,
-  };
+const reportProjectStatus = async (data, bucketId, retryCount = 0) => {
+  try {
+    const contribution = Object.values(JSON.parse(data));
+    const updateData = {
+      timestamp: new Date().toISOString(),
+      contribution,
+    };
 
-  const reportData = await Monitor.findOne({ projectId: bucketId });
-  reportData.contributions.push(updateData);
+    const reportData = await Monitor.findOne({ projectId: bucketId });
+    if (!reportData) {
+      console.log('VersionError: Not found report data');
+      throw new Error('Not found report data');
+    }
 
-  await reportData.save();
-  return reportData;
+    const outputPerUser = reportData.totalOutput;
+
+    contribution.forEach((user) => {
+      const existingUserIndex = outputPerUser.findIndex((obj) => obj.userId === user.userId);
+      if (existingUserIndex !== -1) {
+        outputPerUser[existingUserIndex].numberOfOutput = Number(user.totalOutput);
+      } else {
+        outputPerUser.push({
+          userId: user.userId,
+          numberOfOutput: Number(user.totalOutput),
+        });
+      }
+    });
+
+    reportData.contributions.push(updateData);
+    reportData.totalOutput = outputPerUser;
+
+    await reportData.save();
+    return reportData;
+  } catch (error) {
+    // Handle VersionError and retry the update operation
+    if (error.name === 'VersionError' && retryCount < 10) {
+      // Retry the update with an incremented retryCount
+      console.log('retryCount', retryCount);
+      return reportProjectStatus(data, bucketId, retryCount + 1);
+    }
+    // If the maximum retries are reached or the error is not a VersionError, throw the error
+    throw error;
+  }
 };
 
 /**
@@ -72,5 +78,4 @@ module.exports = {
   reportProjectStatus,
   createProjectStatus,
   getReportToAnalyzer,
-  updateNumberOfOutput,
 };

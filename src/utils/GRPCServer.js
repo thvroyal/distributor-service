@@ -20,11 +20,8 @@ class GRPCServer {
     this.server.addService(computeEngine.MyService.service, {
       runProject: this.runProject.bind(this),
       addOutput: (call, callback) => {
-        const { value, createdAt, bucketId, userId, totalOutput } = call.request;
+        const { value, createdAt, bucketId } = call.request;
         outputService.addOutput({ bucketId, createdAt, value });
-        monitorService.updateNumberOfOutput(userId, totalOutput, bucketId).then((result) => {
-          projectService.updateProjectTotalOutput(result, bucketId);
-        });
 
         callback(null, {});
       },
@@ -34,8 +31,9 @@ class GRPCServer {
         if (data === 'error') {
           projectService.updateProjectError(bucketId);
         } else {
-          monitorService.reportProjectStatus(data, bucketId);
-
+          monitorService.reportProjectStatus(data, bucketId).then((result) => {
+            projectService.updateProjectTotalOutput(result, bucketId);
+          });
           userService.updateUserOutput(data);
         }
 
