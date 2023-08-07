@@ -55,8 +55,8 @@ const updateProjectTotalOutput = async (data, bucketId) => {
     return;
   }
 
-  if (data.totalOutput === data.totalInput) {
-    project.status = 'completed';
+  if (totalOutput === data.totalInput) {
+    project.status = 'finished';
   }
 
   project.computeInfo.totalOutput = totalOutput;

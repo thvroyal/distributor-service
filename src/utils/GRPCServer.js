@@ -35,7 +35,6 @@ class GRPCServer {
           projectService.updateProjectError(bucketId);
         } else {
           monitorService.reportProjectStatus(data, bucketId);
-
           userService.updateUserOutput(data);
         }
 
